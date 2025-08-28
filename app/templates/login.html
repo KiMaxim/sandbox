@@ -7,10 +7,18 @@
         <p>
             {{ form.login.label }} 
             {{ form.login(size=32) }}
+            {% for error in form.login.errors %}
+                <span style="color: red">[{{ error }}]</span>
+            {% endfor %}
+
         </p>
         <p>
             {{ form.password.label }}
             {{ form.password()}}
+            {% for error in form.password.errors %}
+                <span style="color: red">[{{ error }}]</span>
+            {% endfor %}
+
         </p>
         <p>
             {{ form.rememberMe.label }}
