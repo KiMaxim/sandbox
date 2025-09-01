@@ -6,4 +6,4 @@ web_app = Flask(__name__)
 web_app.config.from_object(Config)
 db = SQLAlchemy(web_app)
 Migre = Migrate(web_app, db)
-from app import routes
+from app import routes, models
