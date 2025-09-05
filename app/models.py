@@ -11,6 +11,7 @@ def load_user(user_id):
     return db.session.get(User, int(user_id))
 
 class User(db.Model, UserMixin):
+
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     login: orm.Mapped[str] = orm.mapped_column(sqla.String(64), unique=True, index=True)
     email: orm.Mapped[str] = orm.mapped_column(sqla.String(120), unique=True, index=True)

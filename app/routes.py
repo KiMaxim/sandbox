@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import web_app, db
-from app.forms import LoginForm
+from app.forms import LoginForm, RegistrationForm
 from app.models import User, Post
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sqla
@@ -12,8 +12,21 @@ from urllib.parse import urlsplit
 @login_required
 def index():
     posts = db.session.scalars(sqla.select(Post)).all()
-    
     return render_template("index.html", title="Home", posts=posts)
+
+@web_app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenricated:
+        return redirect(url_for('index'))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        visitor = User(login=form.login.data, email=form.email.data) #type: ignore
+        visitor.set_password(form.password.data)
+        db.session.add(visitor)
+        db.session.commit()
+        flash('Congratulations, you are now a registered user!')
+        return redirect(url_for('login'))
+    return render_template('register.html', title='Register', form=form)
 
 @web_app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -38,3 +51,4 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
