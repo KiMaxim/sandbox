@@ -5,6 +5,7 @@ import sqlalchemy.orm as orm
 from app import db, login
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
+from hashlib import md5
 
 @login.user_loader
 def load_user(user_id):
@@ -15,7 +16,9 @@ class User(db.Model, UserMixin):
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     login: orm.Mapped[str] = orm.mapped_column(sqla.String(64), unique=True, index=True)
     email: orm.Mapped[str] = orm.mapped_column(sqla.String(120), unique=True, index=True)
-    password_hash: orm.Mapped[Optional[str]] = orm.mapped_column(sqla.String(128))
+    password_hash: orm.Mapped[str] = orm.mapped_column(sqla.String(128))
+    about_me: orm.Mapped[Optional[str]] = orm.mapped_column(sqla.String(1256))
+    last_seen: orm.Mapped[Optional[datetime]] = orm.mapped_column(default=lambda: datetime.now(timezone.utc))
 
     posts: orm.WriteOnlyMapped['Post'] = orm.relationship('Post', back_populates='author', lazy='dynamic')
 
@@ -29,6 +32,10 @@ class User(db.Model, UserMixin):
         if self.password_hash is None: # in case password is not set
             return False
         return check_password_hash(self.password_hash, password)
+    
+    def avatar(self, size):
+        digest = md5(self.email.lower().encode('utf-8')).hexdigest
+        return f"https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}"
         
     
 class Post(db.Model):

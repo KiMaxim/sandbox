@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1> Edit Profile </h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.login.label }}
+            {{ form.login(size=32) }}
+            {% for error in form.login.errors %}
+            <span style="color: red;"> [{{ error }}] </span>
+            {% endfor %}
+        </p>
+
+        <p>
+            {{ form.about_me.label }}
+            {{ form.about_me(size=32) }}
+            {% for error in form.about_me.errors %}
+            <span style="color: red;"> [{{ error }}] </span>
+            {% endfor %}
+        </p>
+    </form>
+
+{% endblock %}
