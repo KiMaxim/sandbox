@@ -71,7 +71,7 @@ def user(username):
     return render_template('user.html', user=visitor, posts=posts)
 
 
-@web_app.route('/edit_profile')
+@web_app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
     form = EditProfileForm()
