@@ -47,4 +47,4 @@ class Post(db.Model):
     author: orm.Mapped[User] = orm.relationship(back_populates='posts')
 
     def __repr__(self) -> str:
-        return f"Post {self.body}"
+        return f"Post {self.body}" #this method is defined for developers to easier debug and test the models in the shell

@@ -26,7 +26,7 @@ def before_request():
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    form = RegistrationForm()
+    form = RegistrationForm(current_user.login)
     if form.validate_on_submit():
         visitor = User(login=form.login.data, email=form.email.data) #type: ignore
         visitor.set_password(form.password.data)

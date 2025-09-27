@@ -1,5 +1,6 @@
 from flask import render_template
 from app import web_app, db
+from sqlalchemy.exc import IntegrityError
 
 @web_app.errorhandler(404)
 def not_found_error(error):
