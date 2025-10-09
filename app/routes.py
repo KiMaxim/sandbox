@@ -26,9 +26,9 @@ def before_request():
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
-    form = RegistrationForm(current_user.login)
+    form = RegistrationForm()
     if form.validate_on_submit():
-        visitor = User(login=form.login.data, email=form.email.data) #type: ignore
+        visitor = User(login=form.login.data, email=form.email.data) 
         visitor.set_password(form.password.data)
         db.session.add(visitor)
         db.session.commit()
@@ -74,7 +74,7 @@ def user(username):
 @web_app.route('/edit_profile', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
-    form = EditProfileForm()
+    form = EditProfileForm(current_user.login)
     if form.validate_on_submit():
         current_user.login = form.login.data
         current_user.about_me = form.about_me.data

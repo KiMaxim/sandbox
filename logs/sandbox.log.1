@@ -1,13 +1,4 @@
-2025-09-27 22:45:22,083 ERROR: Exception on /edit_profile [POST] [in /Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/flask/app.py:875]
-Traceback (most recent call last):
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
-    self.dialect.do_execute(
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
-    cursor.execute(statement, parameters)
-sqlite3.IntegrityError: UNIQUE constraint failed: user.login
-
-The above exception was the direct cause of the following exception:
-
+2025-10-07 22:21:45,364 ERROR: Exception on /register [GET] [in /Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/flask/app.py:875]
 Traceback (most recent call last):
   File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
     response = self.full_dispatch_request()
@@ -17,57 +8,6 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/flask_login/utils.py", line 290, in decorated_view
-    return current_app.ensure_sync(func)(*args, **kwargs)
-  File "/Users/kimaxim/Desktop/sandbox/app/routes.py", line 81, in edit_profile
-    db.session.commit()
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/orm/scoping.py", line 599, in commit
-    return self._proxied.commit()
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/orm/session.py", line 2032, in commit
-    trans.commit(_to_root=True)
-  File "<string>", line 2, in commit
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
-    ret_value = fn(self, *arg, **kw)
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/orm/session.py", line 1313, in commit
-    self._prepare_impl()
-  File "<string>", line 2, in _prepare_impl
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/orm/state_changes.py", line 137, in _go
-    ret_value = fn(self, *arg, **kw)
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/orm/session.py", line 1288, in _prepare_impl
-    self.session.flush()
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/orm/session.py", line 4345, in flush
-    self._flush(objects)
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/orm/session.py", line 4481, in _flush
-    transaction.rollback(_capture_exception=True)
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/util/langhelpers.py", line 224, in __exit__
-    raise exc_value.with_traceback(exc_tb)
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/orm/session.py", line 4441, in _flush
-    flush_context.execute()
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/orm/unitofwork.py", line 466, in execute
-    rec.execute(self)
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/orm/unitofwork.py", line 642, in execute
-    util.preloaded.orm_persistence.save_obj(
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/orm/persistence.py", line 85, in save_obj
-    _emit_update_statements(
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/orm/persistence.py", line 912, in _emit_update_statements
-    c = connection.execute(
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
-    return meth(
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
-    return connection._execute_clauseelement(
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
-    ret = self._execute_context(
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
-    return self._exec_single_context(
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
-    self._handle_dbapi_exception(
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
-    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
-    self.dialect.do_execute(
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/sqlalchemy/engine/default.py", line 951, in do_execute
-    cursor.execute(statement, parameters)
-sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) UNIQUE constraint failed: user.login
-[SQL: UPDATE user SET login=?, about_me=? WHERE user.id = ?]
-[parameters: ('someone', '', 3)]
-(Background on this error at: https://sqlalche.me/e/20/gkpj)
+  File "/Users/kimaxim/Desktop/sandbox/app/routes.py", line 29, in register
+    form = RegistrationForm(current_user.login)
+AttributeError: 'AnonymousUserMixin' object has no attribute 'login'
