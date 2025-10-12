@@ -1,13 +1,5 @@
-2025-10-07 22:21:50,571 ERROR: Exception on /register [GET] [in /Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/flask/app.py:875]
-Traceback (most recent call last):
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/flask/app.py", line 1511, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/flask/app.py", line 919, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/flask/app.py", line 917, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/kimaxim/Desktop/sandbox/venv/lib/python3.9/site-packages/flask/app.py", line 902, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/Users/kimaxim/Desktop/sandbox/app/routes.py", line 29, in register
-    form = RegistrationForm(current_user.login)
-AttributeError: 'AnonymousUserMixin' object has no attribute 'login'
+2025-10-09 17:41:35,520 INFO: Microblog startup [in /Users/kimaxim/Desktop/sandbox/app/__init__.py:44]
+2025-10-09 17:49:47,522 INFO: Microblog startup [in /Users/kimaxim/Desktop/sandbox/app/__init__.py:44]
+2025-10-09 17:52:34,817 INFO: Microblog startup [in /Users/kimaxim/Desktop/sandbox/app/__init__.py:44]
+2025-10-09 17:55:54,526 INFO: Microblog startup [in /Users/kimaxim/Desktop/sandbox/app/__init__.py:44]
+2025-10-12 16:42:15,131 INFO: Microblog startup [in /Users/kimaxim/Desktop/sandbox/app/__init__.py:44]

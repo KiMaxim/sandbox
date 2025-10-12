@@ -8,8 +8,25 @@
                 <h1> User: {{ user.login }} </h1>
                 {% if user.about_me %} <p> {{ user.about_me }} </p> {% endif %}
                 {% if user.last_seen %} <p>Last seen on: {{ user.last_seen }} </p> {% endif %} 
+                {% if user == current_user %}
+                    <p><a href="{{ url_for('edit_profile') }}">  </a></p>
+                {% elif not current_user.is_following(user) %}
+                    <p>
+                        <form action="{{ url_for('follow', login=user.login) }}" method="post">
+                            {{ form.hidden_tag() }}
+                            {{ form.submit(value='Follow') }}
+                        </form>
+                    </p>
+                {% else %}
+                    <p>
+                        <form action="{{ url_for('unfollow', login=user.login) }}" method="post">  <!--need to specify the method so the form
+                                                                                                     will go with POST instead of GET, which is default method-->
+                            {{ form.hidden_tag() }}
+                            {{ form.submit(value='Unfollow') }}
+                        </form>
+                    </p>
+                {% endif %}
             </td> 
-            
         </tr> 
     </table>
     <hr>

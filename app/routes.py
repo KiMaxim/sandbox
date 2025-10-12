@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import web_app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm
 from app.models import User, Post
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sqla
@@ -28,7 +28,7 @@ def register():
         return redirect(url_for('index'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        visitor = User(login=form.login.data, email=form.email.data) 
+        visitor = User(login=str(form.login.data), email=str(form.email.data))
         visitor.set_password(form.password.data)
         db.session.add(visitor)
         db.session.commit()
@@ -60,15 +60,16 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-@web_app.route('/user/<username>')
+@web_app.route('/user/<login>')
 @login_required
-def user(username):
-    visitor = db.first_or_404(sqla.select(User).where(User.login == username))
+def user(login):
+    form = EmptyForm()
+    visitor = db.first_or_404(sqla.select(User).where(User.login == login))
     posts = [
         {"author": user, "body": "Test post 1"},
         {"author": user, "body": "Test post 2"}
     ]
-    return render_template('user.html', user=visitor, posts=posts)
+    return render_template('user.html', user=visitor, posts=posts, form=form)
 
 
 @web_app.route('/edit_profile', methods=['GET', 'POST'])
@@ -85,3 +86,41 @@ def edit_profile():
         form.login.data = current_user.login
         form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', title='Edit Profile', form=form)
+
+@web_app.route('/follow/<login>', methods=['POST'])
+@login_required
+def follow(login):
+    form = EmptyForm()
+    if form.validate_on_submit():
+        user = db.session.scalar(sqla.select(User).where(User.login == login))
+        if user is None:
+            flash(f'User {login} not found')
+            return redirect(url_for('index'))
+        if user == current_user:
+            flash('You can not follow yourself')
+            return redirect(url_for('user', login=login))
+        current_user.follow(user)
+        db.session.commit()
+        flash(f'You are following {login}')
+        return redirect(url_for('user', login=login))
+    else:
+        return redirect(url_for('index')) 
+
+@web_app.route('/unfollow/<login>', methods=['POST'])
+@login_required
+def unfollow(login):
+    form = EmptyForm()
+    if form.validate_on_submit():
+        user = db.session.scalar(sqla.select(User).where(User.login == login))
+        if user is None:
+            flash (f'User {login} not found')
+            return redirect(url_for('index'))
+        if user == current_user:
+            flash('You can not unfollow yourself')
+            return(url_for('user', login=login))
+        current_user.unfollow(user)
+        db.session.commit()
+        flash(f'You unfollowed {login}')
+        return redirect(url_for('user', login=login))
+    else:
+        return redirect(url_for('index'))

@@ -6,6 +6,7 @@ from app import db, login
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from hashlib import md5
+from dataclasses import dataclass
 
 @login.user_loader
 def load_user(user_id):
@@ -18,6 +19,7 @@ follower = sqla.Table(
     sqla.Column('followed_id', sqla.Integer, sqla.ForeignKey('user.id'))
 )
 
+@dataclass
 class User(db.Model, UserMixin):
 
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
@@ -42,11 +44,6 @@ class User(db.Model, UserMixin):
     )
 
     posts: orm.WriteOnlyMapped['Post'] = orm.relationship('Post', back_populates='author', lazy='dynamic')
-
-    def __init__(self, login, email, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.login = login
-        self.email = email
 
     def __repr__(self) -> str:
         return f"User {self.login}"
@@ -97,12 +94,13 @@ class User(db.Model, UserMixin):
             .group_by(Post.post_id)
             .order_by(Post.timestamp.desc())
         )
-        
-    
+
+
+@dataclass    
 class Post(db.Model):
     post_id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     body: orm.Mapped[str] = orm.mapped_column(sqla.String(140))
-    timestamp: orm.Mapped[Optional[str]] = orm.mapped_column(sqla.DateTime, index=True, default=lambda: datetime.now(timezone.utc))
+    timestamp: orm.Mapped[Optional[datetime]] = orm.mapped_column(sqla.DateTime, index=True, default=lambda: datetime.now(timezone.utc))
     user_id: orm.Mapped[int] = orm.mapped_column(sqla.ForeignKey(User.id), index=True)
 
     author: orm.Mapped[User] = orm.relationship(back_populates='posts')

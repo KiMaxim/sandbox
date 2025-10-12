@@ -38,4 +38,6 @@ class EditProfileForm(FlaskForm):
         visitor = db.session.scalar(sqla.select(User).where(User.email == email.data))
         if visitor is not None:
             raise ValidationError('Use a different a email, this on is taken')
-     
+
+class EmptyForm(FlaskForm):
+    submit = SubmitField('submit')
