@@ -1,19 +1,27 @@
 from flask import render_template, flash, redirect, url_for, request
 from app import web_app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm
 from app.models import User, Post
 from flask_login import current_user, login_user, logout_user, login_required
 import sqlalchemy as sqla
 from urllib.parse import urlsplit
 from datetime import timezone, datetime
+from typing import cast
 
 
-@web_app.route("/")
-@web_app.route("/index")
+@web_app.route("/", methods=['GET', 'POST'])
+@web_app.route("/index", methods=['GET', 'POST'])
 @login_required
 def index():
-    posts = db.session.scalars(sqla.select(Post)).all()
-    return render_template("index.html", title="Home", posts=posts)
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(body=str(form.post.data), author=cast(User, current_user))
+        db.session.add(post)
+        db.session.commit()
+        flash('Your post is in public, even tho nobody cares')
+    page = request.args.get('page', 1, type=int)
+    posts = db.paginate(current_user.following_posts(), page=page, per_page=web_app.config['POSTS_PER_PAGE'], error_out=False)
+    return render_template("index.html", title="Home", posts=posts, form=form)
 
 @web_app.before_request
 def before_request():
@@ -46,7 +54,7 @@ def login():
         if visitor is None or not visitor.check_password(form.password.data):
             flash('Invalid login or password')
             return redirect(url_for('login'))
-        flash('Login requested for user {}, remmberMe={}'.format(form.login.data, form.rememberMe.data))
+        flash(f'Login requested for user {form.login.data}, rememberMe={form.rememberMe.data}')
         login_user(visitor, remember=form.rememberMe.data)
         next_page = request.args.get('next')
         if not next_page or urlsplit(next_page).netloc != '':
@@ -65,10 +73,7 @@ def logout():
 def user(login):
     form = EmptyForm()
     visitor = db.first_or_404(sqla.select(User).where(User.login == login))
-    posts = [
-        {"author": user, "body": "Test post 1"},
-        {"author": user, "body": "Test post 2"}
-    ]
+    posts = db.session.scalars(sqla.select(Post).where(Post.user_id == current_user.id).order_by(Post.timestamp.desc())).all()
     return render_template('user.html', user=visitor, posts=posts, form=form)
 
 
@@ -124,3 +129,11 @@ def unfollow(login):
         return redirect(url_for('user', login=login))
     else:
         return redirect(url_for('index'))
+
+
+@web_app.route('/explore')
+@login_required
+def explore():
+    query = sqla.select(Post).order_by(Post.timestamp.desc())
+    posts = db.session.scalars(query).all()
+    return render_template('index.html', title='Explore', posts=posts)

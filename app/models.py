@@ -57,7 +57,7 @@ class User(db.Model, UserMixin):
         return check_password_hash(self.password_hash, password)
     
     def avatar(self, size):
-        digest = md5(self.email.lower().encode('utf-8')).hexdigest
+        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return f"https://www.gravatar.com/avatar/{digest}?d=identicon&s={size}"
     
     def follow(self, user):
@@ -103,7 +103,7 @@ class Post(db.Model):
     timestamp: orm.Mapped[Optional[datetime]] = orm.mapped_column(sqla.DateTime, index=True, default=lambda: datetime.now(timezone.utc))
     user_id: orm.Mapped[int] = orm.mapped_column(sqla.ForeignKey(User.id), index=True)
 
-    author: orm.Mapped[User] = orm.relationship(back_populates='posts')
+    author: orm.Mapped[Optional[User]] = orm.relationship(back_populates='posts')
 
     def __repr__(self) -> str:
         return f"Post {self.body}" #this method is defined for developers to easier debug and test the models in the shell

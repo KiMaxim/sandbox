@@ -3,7 +3,22 @@
 
 {% block content %}
     <h1> Hi, {{ current_user.login }}</h1>
+    {% if form %}
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.post.label }} <br>
+                {{ form.post(cols=32, row=4) }} <br>
+                {% for error in form.post.errors %}
+                    <span style="color: red;"> [{{ error }}] </span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.submit() }}
+            </p>
+        </form>
+    {% endif %}
     {% for post in posts %}
-    <div><p> {{ post.author.login }} is saying <b> {{ post.body }} </b> </p></div>
+        {% include '#post.html' %}
     {% endfor %}
 {% endblock %}
