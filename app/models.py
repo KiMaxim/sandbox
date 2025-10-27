@@ -1,14 +1,21 @@
+import sqlalchemy.orm as orm
+import sqlalchemy as sqla
+import jwt
 from typing import Optional 
 from flask_login import UserMixin
-import sqlalchemy as sqla
-import sqlalchemy.orm as orm
-from app import db, login
+from app import db, login_manager, web_app
 from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash, check_password_hash
 from hashlib import md5
 from dataclasses import dataclass
+from time import time
 
-@login.user_loader
+'''
+responsible for managin whether the user is already in the system or not. 
+if the user is logged in, load the corresponding data
+'''
+
+@login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))
 
@@ -94,6 +101,17 @@ class User(db.Model, UserMixin):
             .group_by(Post.post_id)
             .order_by(Post.timestamp.desc())
         )
+    
+    def get_reset_password_token(self, expiresIn=600):
+        return jwt.encode({'user_id': self.id, 'exp': time() + expiresIn}, web_app.config['SECRET_KEY'], algorithm='HS256')
+    
+    @staticmethod
+    def verify_reset_password(token):
+        try:
+            id = jwt.decode(token, web_app.config['SECRET_KEY'], algorithms=['HS256'])['user_id']
+        except:
+            return
+        return db.session.get(User, id)
 
 
 @dataclass    

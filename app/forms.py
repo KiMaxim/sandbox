@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.form import _Auto
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, TextAreaField
-from wtforms.validators import DataRequired, ValidationError, EqualTo, Length
+from wtforms.validators import DataRequired, ValidationError, EqualTo, Length, Email
 from app import db
 import sqlalchemy as sqla
 from app.models import User
@@ -30,14 +30,18 @@ class EditProfileForm(FlaskForm):
 
     def validate_login(self, login):
         if login.data != self.original_username:
-            visitor = db.session.scalar(sqla.select(User).where(User.login == login.data))
-            if visitor is not None:
+            user = db.session.scalar(sqla.select(User).where(User.login == login.data))
+            if user is not None:
                 raise ValidationError('Use a different a login, this on is taken')
 
     def validate_email(self, email):
-        visitor = db.session.scalar(sqla.select(User).where(User.email == email.data))
-        if visitor is not None:
+        user = db.session.scalar(sqla.select(User).where(User.email == email.data))
+        if user is not None:
             raise ValidationError('Use a different a email, this on is taken')
+        
+class ResetPasswordForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset')
 
 class EmptyForm(FlaskForm):
     submit = SubmitField('submit')

@@ -5,6 +5,7 @@ from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate 
 from flask_login import LoginManager
+from flask_mail import Mail
 
 web_app = Flask(__name__)
 web_app.config.from_object(Config)
@@ -12,8 +13,10 @@ web_app.config.from_object(Config)
 db = SQLAlchemy(web_app)
 Migre = Migrate(web_app, db)
 
-login = LoginManager(web_app)
-login.login_view = 'login' # type: ignore
+login_manager = LoginManager(web_app)
+login_manager.login_view = 'login' #type: ignore
+
+mail = Mail(web_app)
 
 if not web_app.debug:
     if web_app.config['MAIL_SERVER']:

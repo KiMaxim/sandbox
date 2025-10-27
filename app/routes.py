@@ -1,14 +1,34 @@
+import sqlalchemy as sqla
 from flask import render_template, flash, redirect, url_for, request
 from app import web_app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm, ResetPasswordForm
 from app.models import User, Post
+from app.email import send_password_request_email
 from flask_login import current_user, login_user, logout_user, login_required
-import sqlalchemy as sqla
 from urllib.parse import urlsplit
 from datetime import timezone, datetime
 from typing import cast
 
 
+@web_app.route('/explore')
+@login_required
+def explore():
+    page = request.args.get('page', 1, type=int)
+    query = sqla.select(Post).order_by(Post.timestamp.desc())
+    posts = db.paginate(query, page=page, per_page=web_app.config['POSTS_PER_PAGE'], error_out=False)
+
+    next_url = url_for('index', page=posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('index', page=posts.prev_num) \
+        if posts.has_prev else None 
+    
+    return render_template('index.html', title='Explore', posts=posts, next_url=next_url, prev_url=prev_url)
+
+
+'''
+posts by itself is just a object of Pagination class, 
+so .items is an attribute which returns rows from database
+'''
 @web_app.route("/", methods=['GET', 'POST'])
 @web_app.route("/index", methods=['GET', 'POST'])
 @login_required
@@ -21,7 +41,16 @@ def index():
         flash('Your post is in public, even tho nobody cares')
     page = request.args.get('page', 1, type=int)
     posts = db.paginate(current_user.following_posts(), page=page, per_page=web_app.config['POSTS_PER_PAGE'], error_out=False)
-    return render_template("index.html", title="Home", posts=posts, form=form)
+
+    next_url = url_for('index', page=posts.next_num) \
+        if posts.has_next else None
+    prev_url = url_for('index', page=posts.prev_num) \
+        if posts.has_prev else None
+    
+    return render_template('index.html', title="Home", 
+                           posts=posts.items, form=form, 
+                           next_url=next_url, prev_url=prev_url) 
+
 
 @web_app.before_request
 def before_request():
@@ -130,10 +159,15 @@ def unfollow(login):
     else:
         return redirect(url_for('index'))
 
-
-@web_app.route('/explore')
-@login_required
-def explore():
-    query = sqla.select(Post).order_by(Post.timestamp.desc())
-    posts = db.session.scalars(query).all()
-    return render_template('index.html', title='Explore', posts=posts)
+@web_app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user = db.session.scalar(sqla.select(User).where(User.email == form.email.data))
+        if user: 
+            send_password_request_email(user)
+        flash('Check your email')
+        return redirect(url_for('login'))
+    return render_template('reset_password.html', title='Reset Password', form=form)
