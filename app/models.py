@@ -106,7 +106,7 @@ class User(db.Model, UserMixin):
         return jwt.encode({'user_id': self.id, 'exp': time() + expiresIn}, web_app.config['SECRET_KEY'], algorithm='HS256')
     
     @staticmethod
-    def verify_reset_password(token):
+    def verify_reset_password_token(token):
         try:
             id = jwt.decode(token, web_app.config['SECRET_KEY'], algorithms=['HS256'])['user_id']
         except:

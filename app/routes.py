@@ -1,9 +1,9 @@
 import sqlalchemy as sqla
 from flask import render_template, flash, redirect, url_for, request
 from app import web_app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm, ResetPasswordForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, EmptyForm, PostForm, ResetPasswordRequestForm, ResetPasswordForm
 from app.models import User, Post
-from app.email import send_password_request_email
+from app.email import send_password_reset_email
 from flask_login import current_user, login_user, logout_user, login_required
 from urllib.parse import urlsplit
 from datetime import timezone, datetime
@@ -17,9 +17,9 @@ def explore():
     query = sqla.select(Post).order_by(Post.timestamp.desc())
     posts = db.paginate(query, page=page, per_page=web_app.config['POSTS_PER_PAGE'], error_out=False)
 
-    next_url = url_for('index', page=posts.next_num) \
+    next_url = url_for('explore', page=posts.next_num) \
         if posts.has_next else None
-    prev_url = url_for('index', page=posts.prev_num) \
+    prev_url = url_for('explore', page=posts.prev_num) \
         if posts.has_prev else None 
     
     return render_template('index.html', title='Explore', posts=posts, next_url=next_url, prev_url=prev_url)
@@ -130,7 +130,8 @@ def follow(login):
         if user is None:
             flash(f'User {login} not found')
             return redirect(url_for('index'))
-        if user == current_user:
+        if current_user.id == user.id: #user and current_user are represented as two different objects in Python,
+                                       #meanwhile user.id and current_user.id are specified to point to id of the user
             flash('You can not follow yourself')
             return redirect(url_for('user', login=login))
         current_user.follow(user)
@@ -158,16 +159,34 @@ def unfollow(login):
         return redirect(url_for('user', login=login))
     else:
         return redirect(url_for('index'))
-
-@web_app.route('/reset_password', methods=['GET', 'POST'])
-def reset_password():
+    
+@web_app.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
     if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        user = db.session.scalar(
+            sqla.select(User).where(User.email == form.email.data))
+        if user:
+            send_password_reset_email(user)
+        flash('Check your email for the instructions to reset your password')
+        return redirect(url_for('login'))
+    return render_template('reset_password_request.html', title='Reset Password', form=form)
+
+@web_app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    user = User.verify_reset_password_token(token)
+    if not user:
         return redirect(url_for('index'))
     form = ResetPasswordForm()
     if form.validate_on_submit():
-        user = db.session.scalar(sqla.select(User).where(User.email == form.email.data))
-        if user: 
-            send_password_request_email(user)
-        flash('Check your email')
-        return redirect(url_for('login'))
-    return render_template('reset_password.html', title='Reset Password', form=form)
+        user.set_password(form.password2.data)
+        db.session.commit()
+        flash('Your password has been reset')
+        return redirect(url_for('index'))
+    return url_for('reset_password.html', form=form)
+
+

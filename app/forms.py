@@ -39,12 +39,17 @@ class EditProfileForm(FlaskForm):
         if user is not None:
             raise ValidationError('Use a different a email, this on is taken')
         
-class ResetPasswordForm(FlaskForm):
+class ResetPasswordRequestForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     submit = SubmitField('Request Password Reset')
 
+class ResetPasswordForm(FlaskForm):
+    password = PasswordField('New Password', validators=[DataRequired()])
+    password2 = PasswordField('Repeat New Password', validators=[DataRequired()])
+    submit = SubmitField('Request Password Reset')
+                              
 class EmptyForm(FlaskForm):
-    submit = SubmitField('submit')
+    submit = SubmitField('Submit')
 
 class PostForm(FlaskForm):
     post = TextAreaField('Say Something', validators=[DataRequired(), Length(min=3, max=300)])

@@ -8,7 +8,7 @@
                 <h1> User: {{ user.login }} </h1>
                 {% if user.about_me %} <p> {{ user.about_me }} </p> {% endif %}
                 {% if user.last_seen %} <p>Last seen on: {{ user.last_seen }} </p> {% endif %} 
-                {% if user == current_user %}
+                {% if user.id == current_user.id %} <!-- current_user and user can be two different objects in Python -->
                     <p><a href="{{ url_for('edit_profile') }}">  </a></p>
                 {% elif not current_user.is_following(user) %}
                     <p>
