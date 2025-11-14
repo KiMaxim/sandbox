@@ -7,14 +7,16 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_mail import Mail
 
+
 web_app = Flask(__name__)
 web_app.config.from_object(Config)
 
 db = SQLAlchemy(web_app)
-Migre = Migrate(web_app, db)
+Migrate = Migrate(web_app, db)
 
 login_manager = LoginManager(web_app)
 login_manager.login_view = 'login' #type: ignore
+
 
 mail = Mail(web_app)
 

@@ -1,40 +1,49 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1> Sign in </h1>
-    <form action="" method="post" novalidate>
+<div class="container py-5" style="max-width: 480px;">
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+      <h1 class="h3 mb-4 text-center">Sign In</h1>
+
+      <form action="" method="post" novalidate>
         {{ form.hidden_tag() }}
 
-        <p>
-            {{ form.login.label }} 
-            {{ form.login(size=32) }}
-            {% for error in form.login.errors %}
-                <span style="color: red">[{{ error }}]</span>
-            {% endfor %}
+        <!-- Login field -->
+        <div class="mb-3">
+          {{ form.login.label(class="form-label") }}
+          {{ form.login(class="form-control", placeholder="Enter your username or email") }}
+          {% for error in form.login.errors %}
+            <div class="text-danger small">{{ error }}</div>
+          {% endfor %}
+        </div>
 
+        <!-- Password field -->
+        <div class="mb-3">
+          {{ form.password.label(class="form-label") }}
+          {{ form.password(class="form-control", placeholder="Enter your password") }}
+          {% for error in form.password.errors %}
+            <div class="text-danger small">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <!-- Remember me -->
+        <div class="form-check mb-3">
+          {{ form.rememberMe(class="form-check-input", id="rememberMe") }}
+          {{ form.rememberMe.label(class="form-check-label", for="rememberMe") }}
+        </div>
+
+        <!-- Submit button -->
+        <div class="d-grid mb-3">
+          {{ form.submit(class="btn btn-primary btn-lg") }}
+        </div>
+
+        <!-- Forgot password -->
+        <p class="text-center mb-0">
+          <a href="{{ url_for('reset_password_request') }}" class="text-decoration-none">Forgot your password?</a>
         </p>
-
-        <p>
-            {{ form.password.label }}
-            {{ form.password()}}
-            {% for error in form.password.errors %}
-                <span style="color: red">[{{ error }}]</span>
-            {% endfor %}
-
-        </p>
-
-        <p>
-            {{ form.rememberMe.label }}
-            {{ form.rememberMe() }}
-        </p>
-
-        <p>
-            {{ form.submit() }}
-        </p>
-
-        <p> 
-            Forgot your password?
-            <a href="{{ url_for('reset_password_request') }}"> Click to reset password </a>
-        </p>
-    </form>
+      </form>
+    </div>
+  </div>
+</div>
 {% endblock %}

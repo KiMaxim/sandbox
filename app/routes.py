@@ -9,6 +9,12 @@ from urllib.parse import urlsplit
 from datetime import timezone, datetime
 from typing import cast
 
+@web_app.route('/')
+@web_app.route('/home_page', methods=['GET', 'POST'])
+def home_page():
+    posts = db.session.scalars(sqla.select(Post).order_by(Post.timestamp.desc())).all()
+    return render_template('home_page.html', posts=posts)
+
 
 @web_app.route('/explore')
 @login_required
@@ -29,7 +35,8 @@ def explore():
 posts by itself is just a object of Pagination class, 
 so .items is an attribute which returns rows from database
 '''
-@web_app.route("/", methods=['GET', 'POST'])
+
+
 @web_app.route("/index", methods=['GET', 'POST'])
 @login_required
 def index():

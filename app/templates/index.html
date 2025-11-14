@@ -1,32 +1,50 @@
 {% extends "base.html" %}
 
-
 {% block content %}
-    <h1> Hi, {{ current_user.login }}</h1>
+<div class="container mt-4">
+    <h1 class="mb-4">Hi, {{ current_user.login }} 👋</h1>
+
     {% if form %}
-        <form action="" method="post">
-            {{ form.hidden_tag() }}
-            <p>
-                {{ form.post.label }} <br>
-                {{ form.post(cols=32, row=4) }} <br>
-                {% for error in form.post.errors %}
-                    <span style="color: red;"> [{{ error }}] </span>
-                {% endfor %}
-            </p>
-            <p>
-                {{ form.submit() }}
-            </p>
-        </form>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <form action="" method="post">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ form.post.label(class="form-label fw-semibold") }}
+                    {{ form.post(class="form-control", rows=4, placeholder="What's on your mind?") }}
+                    {% for error in form.post.errors %}
+                        <div class="text-danger small mt-1">[{{ error }}]</div>
+                    {% endfor %}
+                </div>
+                <div class="text-end">
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </form>
+        </div>
+    </div>
     {% endif %}
+
     {% for post in posts %}
-        {% include '#post.html' %}
+    <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+            {% include '#post.html' %}
+        </div>
+    </div>
     {% endfor %}
 
-    {% if prev_url %}
-        <a href="{{ prev_url }}"> Newer Posts </a>
-    {% endif %}
-
-    {% if next_url %}
-        <a href="{{ next_url }}"> Older Posts</a>
-    {% endif %}
+    <nav aria-label="Post navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if prev_url %}
+            <li class="page-item">
+                <a class="page-link" href="{{ prev_url }}">← Newer Posts</a>
+            </li>
+            {% endif %}
+            {% if next_url %}
+            <li class="page-item">
+                <a class="page-link" href="{{ next_url }}">Older Posts →</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
 {% endblock %}
