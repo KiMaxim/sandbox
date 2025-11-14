@@ -169,7 +169,7 @@ def unfollow(login):
     
 @web_app.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
-    if current_user.is_authenticated:
+    if current_user.is_anonymous:
         return redirect(url_for('index'))
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
@@ -183,7 +183,7 @@ def reset_password_request():
 
 @web_app.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
-    if current_user.is_authenticated:
+    if current_user.is_anonymous:
         return redirect(url_for('index'))
     user = User.verify_reset_password_token(token)
     if not user:
@@ -193,7 +193,7 @@ def reset_password(token):
         user.set_password(form.password2.data)
         db.session.commit()
         flash('Your password has been reset')
-        return redirect(url_for('index'))
-    return url_for('reset_password.html', form=form)
+        return redirect(url_for('home_page'))
+    return render_template('reset_password.html', form=form)
 
 

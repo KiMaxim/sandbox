@@ -1,27 +1,37 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<div class="d-flex justify-content-center mt-5">
+  <div style="width: 100%; max-width: 400px;">
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-4">
+        <h2 class="h5 text-center mb-3">Edit Profile</h2>
 
-    <h1> Edit Profile </h1>
-    <form action="" method="post">
-        {{ form.hidden_tag() }}
-        <p>
-            {{ form.login.label }}
-            {{ form.login(size=32) }}
+        <form action="" method="post" novalidate>
+          {{ form.hidden_tag() }}
+
+          <div class="mb-3">
+            {{ form.login.label(class="form-label") }}
+            {{ form.login(class="form-control", placeholder="Enter your username") }}
             {% for error in form.login.errors %}
-            <span style="color: red;"> [{{ error }}] </span>
+            <div class="text-danger small">{{ error }}</div>
             {% endfor %}
-        </p>
+          </div>
 
-        <p>
-            {{ form.about_me.label }}
-            {{ form.about_me(size=32) }}
+          <div class="mb-3">
+            {{ form.about_me.label(class="form-label") }}
+            {{ form.about_me(class="form-control", placeholder="A short bio about you") }}
             {% for error in form.about_me.errors %}
-            <span style="color: red;"> [{{ error }}] </span>
+            <div class="text-danger small">{{ error }}</div>
             {% endfor %}
-        </p>
+          </div>
 
-        <p>{{ form.submit() }}</p>
-    </form>
-
+          <div class="d-grid">
+            {{ form.submit(class="btn btn-primary btn-lg") }}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

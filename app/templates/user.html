@@ -1,36 +1,45 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <table>
-        <tr valign="top">
-            <td><img src="{{ user.avatar(128) }}"></td>
-            <td>
-                <h1> User: {{ user.login }} </h1>
-                {% if user.about_me %} <p> {{ user.about_me }} </p> {% endif %}
-                {% if user.last_seen %} <p>Last seen on: {{ user.last_seen }} </p> {% endif %} 
-                {% if user.id == current_user.id %} <!-- current_user and user can be two different objects in Python -->
-                    <p><a href="{{ url_for('edit_profile') }}">  </a></p>
-                {% elif not current_user.is_following(user) %}
-                    <p>
-                        <form action="{{ url_for('follow', login=user.login) }}" method="post">
-                            {{ form.hidden_tag() }}
-                            {{ form.submit(value='Follow') }}
-                        </form>
-                    </p>
-                {% else %}
-                    <p>
-                        <form action="{{ url_for('unfollow', login=user.login) }}" method="post">  <!--need to specify the method so the form
-                                                                                                     will go with POST instead of GET, which is default method-->
-                            {{ form.hidden_tag() }}
-                            {{ form.submit(value='Unfollow') }}
-                        </form>
-                    </p>
-                {% endif %}
-            </td> 
-        </tr> 
-    </table>
-    <hr>
-    {% for post in posts %}
-        {% include "#post.html" %}
-    {% endfor %}
+<div class="container mt-4" style="max-width: 720px;">
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body d-flex align-items-start">
+      
+      <div class="me-3">
+        <img src="{{ user.avatar(128) }}" class="rounded-circle" alt="User avatar">
+      </div>
+      
+      <div>
+        <h2 class="h5 mb-1">User: {{ user.login }}</h2>
+        {% if user.about_me %}
+          <p class="mb-1">{{ user.about_me }}</p>
+        {% endif %}
+        {% if user.last_seen %}
+          <p class="text-muted mb-2 small">Last seen on: {{ user.last_seen }}</p>
+        {% endif %}
+
+        {% if user.id == current_user.id %}
+          <a href="{{ url_for('edit_profile') }}" class="btn btn-outline-primary btn-sm">Edit Profile</a>
+        {% elif not current_user.is_following(user) %}
+          <form action="{{ url_for('follow', login=user.login) }}" method="post" class="d-inline">
+            {{ form.hidden_tag() }}
+            {{ form.submit(class="btn btn-primary btn-sm", value='Follow') }}
+          </form>
+        {% else %}
+          <form action="{{ url_for('unfollow', login=user.login) }}" method="post" class="d-inline">
+            {{ form.hidden_tag() }}
+            {{ form.submit(class="btn btn-secondary btn-sm", value='Unfollow') }}
+          </form>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+
+  <hr>
+
+  {% for post in posts %}
+    {% include "#post.html" %}
+  {% endfor %}
+</div>
 {% endblock %}
